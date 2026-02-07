@@ -113,6 +113,7 @@ section {
 }
 
 .hero-carousel img {
+    will-change: opacity;
     position: absolute;
     top: 0;
     left: 0;
@@ -225,6 +226,7 @@ ol li {
 }
 
 .carousel-track {
+    will-change: transform;
     display: flex;
     gap: 20px;
     transition: transform 0.5s ease-in-out;
@@ -236,8 +238,12 @@ ol li {
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-    min-width: 300px;
-    max-width: 300px;
+
+    width: 300px;
+    /* Tenta ser 300px */
+    max-width: 90vw;
+    /* Mas nunca ocupa mais que 90% da largura da tela */
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
 }
@@ -415,7 +421,7 @@ footer {
 
     .card-cidade {
         scroll-snap-align: center;
-        margin: 0 10px;
+        margin: 0;
     }
 }
 

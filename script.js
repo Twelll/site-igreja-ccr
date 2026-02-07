@@ -1,23 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     initHeroCarousel();
     initCitiesCarousel();
+    initMemberToggles();
 });
 
 function initHeroCarousel() {
     const heroImages = document.querySelectorAll('.hero-carousel img');
+    const heroContainer = document.querySelector('.hero-carousel'); 
 
     if (heroImages.length === 0) return;
 
     let currentIndex = 0;
-    const intervalTime = 5000; // Troca a cada 5 segundos
+    const intervalTime = 5000;
+    let interval;
 
-    setInterval(() => {
-        heroImages[currentIndex].classList.remove('active');
+    const startInterval = () => {
+        interval = setInterval(() => {
+            heroImages[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % heroImages.length;
+            heroImages[currentIndex].classList.add('active');
+        }, intervalTime);
+    };
 
-        currentIndex = (currentIndex + 1) % heroImages.length;
+    const stopInterval = () => {
+        clearInterval(interval);
+    };
 
-        heroImages[currentIndex].classList.add('active');
-    }, intervalTime);
+    // Inicia o carrossel
+    startInterval();
+
+    // Pausa ao passar o mouse
+    if (heroContainer) {
+        heroContainer.addEventListener('mouseenter', stopInterval);
+        heroContainer.addEventListener('mouseleave', startInterval);
+    }
 }
 
 function initCitiesCarousel() {
@@ -29,16 +45,28 @@ function initCitiesCarousel() {
     if (!track || !cards.length) return;
 
     let currentIndex = 0;
-    const gap = 20;
-    const cardWidth = cards[0].offsetWidth;
+
+    // Função para pegar o GAP diretamente do CSS
+    function getGap() {
+        const style = window.getComputedStyle(track);
+        return parseInt(style.gap || 0);
+    }
+
+    function getCardWidth() {
+        return cards[0].offsetWidth;
+    }
 
     function updateCarousel() {
+        const cardWidth = getCardWidth();
+        const gap = getGap();
         const moveAmount = (cardWidth + gap) * currentIndex;
         track.style.transform = `translateX(-${moveAmount}px)`;
     }
 
     function getMaxIndex() {
         const containerWidth = document.querySelector('.carousel-track-container').offsetWidth;
+        const cardWidth = getCardWidth();
+        const gap = getGap();
         const visibleCards = Math.floor(containerWidth / (cardWidth + gap));
         return Math.max(0, cards.length - visibleCards);
     }
@@ -60,15 +88,40 @@ function initCitiesCarousel() {
             if (currentIndex > 0) {
                 currentIndex--;
             } else {
-                currentIndex = getMaxIndex();
+                currentIndex = getMaxIndex(); 
             }
             updateCarousel();
         });
     }
 
+    // --- CORREÇÃO DE RESIZE APLICADA AQUI (LOCAL CORRETO) ---
+    let resizeTimer;
+    let lastWidth = window.innerWidth;
+
     window.addEventListener('resize', () => {
-        currentIndex = 0;
-        updateCarousel();
+        // Limpa o timer anterior se o usuário ainda estiver redimensionando
+        clearTimeout(resizeTimer);
+
+        // Cria um novo timer para executar apenas após 250ms de pausa
+        resizeTimer = setTimeout(() => {
+            // Verifica se a largura realmente mudou (evita disparo no scroll do mobile)
+            if (window.innerWidth !== lastWidth) {
+                lastWidth = window.innerWidth; // Atualiza a largura salva
+
+                // 1. Reseta e atualiza o carrossel (Agora funciona pois está no escopo certo!)
+                currentIndex = 0;
+                updateCarousel();
+
+                // 2. Recalcula altura dos toggles se necessário (Global)
+                const toggles = document.querySelectorAll('.btn-toggle-membros');
+                toggles.forEach(btn => {
+                    if (btn.classList.contains('aberto')) {
+                        const content = btn.nextElementSibling;
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            }
+        }, 250); 
     });
 }
 
@@ -78,18 +131,18 @@ function initMemberToggles() {
     toggles.forEach(btn => {
         btn.addEventListener('click', () => {
             btn.classList.toggle('aberto');
-
             const content = btn.nextElementSibling;
 
-            if (content.style.maxHeight) {
+            // Lógica de alternância (abrir/fechar)
+            const isOpen = content.style.maxHeight ? true : false;
+
+            if (isOpen) {
                 content.style.maxHeight = null;
+                btn.setAttribute('aria-expanded', 'false'); // Acessibilidade corrigida
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
+                btn.setAttribute('aria-expanded', 'true'); // Acessibilidade corrigida
             }
         });
     });
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    initMemberToggles();
-});
