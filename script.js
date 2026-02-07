@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initHeroCarousel() {
     const heroImages = document.querySelectorAll('.hero-carousel img');
-    
+
     if (heroImages.length === 0) return;
 
     let currentIndex = 0;
@@ -29,7 +29,7 @@ function initCitiesCarousel() {
     if (!track || !cards.length) return;
 
     let currentIndex = 0;
-    const gap = 20; 
+    const gap = 20;
     const cardWidth = cards[0].offsetWidth;
 
     function updateCarousel() {
@@ -71,3 +71,25 @@ function initCitiesCarousel() {
         updateCarousel();
     });
 }
+
+function initMemberToggles() {
+    const toggles = document.querySelectorAll('.btn-toggle-membros');
+
+    toggles.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('aberto');
+
+            const content = btn.nextElementSibling;
+
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initMemberToggles();
+});
