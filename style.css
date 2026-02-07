@@ -240,9 +240,7 @@ ol li {
     transition: transform 0.3s ease;
 
     width: 300px;
-    /* Tenta ser 300px */
     max-width: 90vw;
-    /* Mas nunca ocupa mais que 90% da largura da tela */
     flex-shrink: 0;
     display: flex;
     flex-direction: column;

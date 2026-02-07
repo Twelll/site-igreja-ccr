@@ -26,10 +26,8 @@ function initHeroCarousel() {
         clearInterval(interval);
     };
 
-    // Inicia o carrossel
     startInterval();
 
-    // Pausa ao passar o mouse
     if (heroContainer) {
         heroContainer.addEventListener('mouseenter', stopInterval);
         heroContainer.addEventListener('mouseleave', startInterval);
@@ -46,7 +44,6 @@ function initCitiesCarousel() {
 
     let currentIndex = 0;
 
-    // Função para pegar o GAP diretamente do CSS
     function getGap() {
         const style = window.getComputedStyle(track);
         return parseInt(style.gap || 0);
@@ -94,25 +91,19 @@ function initCitiesCarousel() {
         });
     }
 
-    // --- CORREÇÃO DE RESIZE APLICADA AQUI (LOCAL CORRETO) ---
     let resizeTimer;
     let lastWidth = window.innerWidth;
 
     window.addEventListener('resize', () => {
-        // Limpa o timer anterior se o usuário ainda estiver redimensionando
         clearTimeout(resizeTimer);
 
-        // Cria um novo timer para executar apenas após 250ms de pausa
         resizeTimer = setTimeout(() => {
-            // Verifica se a largura realmente mudou (evita disparo no scroll do mobile)
             if (window.innerWidth !== lastWidth) {
                 lastWidth = window.innerWidth; // Atualiza a largura salva
 
-                // 1. Reseta e atualiza o carrossel (Agora funciona pois está no escopo certo!)
                 currentIndex = 0;
                 updateCarousel();
 
-                // 2. Recalcula altura dos toggles se necessário (Global)
                 const toggles = document.querySelectorAll('.btn-toggle-membros');
                 toggles.forEach(btn => {
                     if (btn.classList.contains('aberto')) {
@@ -133,15 +124,14 @@ function initMemberToggles() {
             btn.classList.toggle('aberto');
             const content = btn.nextElementSibling;
 
-            // Lógica de alternância (abrir/fechar)
             const isOpen = content.style.maxHeight ? true : false;
 
             if (isOpen) {
                 content.style.maxHeight = null;
-                btn.setAttribute('aria-expanded', 'false'); // Acessibilidade corrigida
+                btn.setAttribute('aria-expanded', 'false');
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
-                btn.setAttribute('aria-expanded', 'true'); // Acessibilidade corrigida
+                btn.setAttribute('aria-expanded', 'true'); 
             }
         });
     });
